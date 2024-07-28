@@ -10,8 +10,8 @@ public class Main {
 
     public static Map<Integer, List<String>> queryIdToKeywordsMap = new HashMap<>();
     public  static Queue<String> taskQueue = new LinkedList<>();
-    public static Map<String, Map<String, List<Integer>>> queryWordCache = new HashMap<>();
-    public static List<String> textFilePaths = new ArrayList<>();
+    public static final Map<String, Map<String, List<Integer>>> queryWordCache = new HashMap<>();
+    public static final List<String> textFilePaths = new ArrayList<>();
     private static int queryIdCounter = 1;
 
     public static void main(String[] args) {
