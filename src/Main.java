@@ -11,6 +11,9 @@ public class Main {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        Consumer consumer= new Consumer();
+        Thread thread = new Thread(consumer);
+        thread.start();
         String folderPath = "../files";
         File folder = new File(folderPath);
 
@@ -52,7 +55,7 @@ public class Main {
                     scanner.close();
                     return;
                 default:
-                    System.out.println("Invalid choice. Please try again.");
+                    System.out.println("Invalid choice.");
             }
         }
     }
