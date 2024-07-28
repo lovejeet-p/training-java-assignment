@@ -77,7 +77,10 @@ public class Main {
         System.out.print("Enter Query ID: ");
         int queryId = scanner.nextInt();
         scanner.nextLine();
-
+        if (!queryIdToKeywordsMap.containsKey(queryId)){
+            System.out.println("Query id doesn't exist");
+            return;
+        }
         List<String> result = queryIdToKeywordsMap.get(queryId);
         boolean queryComplete = true;
         for (String word : result) {
