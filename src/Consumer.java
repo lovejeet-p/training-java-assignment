@@ -12,13 +12,14 @@ class Consumer implements Runnable {
     private ExecutorService fileExecutorService;
 
     public Consumer() {
-        this.fileExecutorService = Executors.newFixedThreadPool(NUM_FILE_THREADS);
+        this.fileExecutorService = Executors.newFixedThreadPool(NUM_FILE_THREADS, DaemonThreadFactory.instance);
         BlockingQueue<Runnable> blockingQueue = new LinkedBlockingQueue<>(NUM_BATCH_THREADS);
         this.batchExecutorService = new ThreadPoolExecutor(
                 NUM_BATCH_THREADS,
                 NUM_BATCH_THREADS,
                 0L, TimeUnit.MILLISECONDS,
                 blockingQueue,
+                DaemonThreadFactory.instance,
                 new ThreadPoolExecutor.CallerRunsPolicy()
         );
     }
