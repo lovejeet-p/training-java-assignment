@@ -1,6 +1,5 @@
 import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,16 +25,16 @@ public class FileSearcher implements Runnable {
 
     @Override
     public void run() {
+
         synchronized (Main.wordQueryCache) {
             batch = batch.stream().filter(SEARCHED_WORDS_FILTER).collect(Collectors.toList());
+
         }
-        ClassLoader classLoader = getClass().getClassLoader();
-        InputStream inputStream = classLoader.getResourceAsStream(path);
-        searchWords(inputStream);
+        searchWords();
     }
 
-    void searchWords(InputStream inputStream) {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
+    void searchWords() {
+        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
             int lineNumber = 0;
             String line;
             while ((line = br.readLine()) != null) {

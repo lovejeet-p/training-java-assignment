@@ -1,16 +1,16 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Main {
 
     public static Map<Integer, List<String>> queryIdToKeywordsMap = new HashMap<>();
-    public  static Queue<String> taskQueue = new LinkedList<>();
-    public static final Map<String, Map<String, List<Integer>>> queryWordCache = new HashMap<>();
+    public  static ConcurrentLinkedQueue<String> taskQueue = new ConcurrentLinkedQueue<>();
+    public static final ConcurrentHashMap<String, ConcurrentHashMap<String, List<Integer>>> wordQueryCache = new ConcurrentHashMap<>();
     public static final List<String> textFilePaths = new ArrayList<>();
     private static int queryIdCounter = 1;
 
@@ -18,8 +18,9 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         Consumer consumer= new Consumer();
         Thread thread = new Thread(consumer);
+        thread.setDaemon(true);
         thread.start();
-        String folderPath = "../files";
+        String folderPath = "files";
         File folder = new File(folderPath);
 
         if (folder.exists() && folder.isDirectory()) {
@@ -32,12 +33,9 @@ public class Main {
                     }
                 }
             }
-            String[] textFilePathArray = textFilePaths.toArray(new String[0]);
-            for (String path : textFilePathArray) {
-                System.out.println(path);
-            }
+
         } else {
-            System.out.println("The specified path is not a folder or does not exist.");
+            System.out.println("Folder doesn't exist.");
         }
         while (true) {
             System.out.println("Menu:");
@@ -72,7 +70,11 @@ public class Main {
         String[] keywordArray = keywords.split(" ");
         List<String> keywordList = new ArrayList<>();
         for (String keyword : keywordArray) {
-            taskQueue.add(keyword);
+            if(!wordQueryCache.containsKey(keyword)){
+                wordQueryCache.put(keyword,new ConcurrentHashMap<>());
+                taskQueue.add(keyword);
+
+            }
             keywordList.add(keyword);
         }
 
@@ -92,7 +94,8 @@ public class Main {
         List<String> result = queryIdToKeywordsMap.get(queryId);
         boolean queryComplete = true;
         for (String word : result) {
-            if (!queryWordCache.containsKey(word) || queryWordCache.get(word).size() != textFilePaths.size()) {
+
+            if (!wordQueryCache.containsKey(word) || wordQueryCache.get(word).size() != textFilePaths.size()) {
                 queryComplete = false;
                 break;
             }
@@ -100,7 +103,7 @@ public class Main {
 
         if (queryComplete) {
             for (String word : result) {
-                Map<String, List<Integer>> fileLinesMap = queryWordCache.get(word);
+                Map<String, List<Integer>> fileLinesMap = wordQueryCache.get(word);
                 System.out.println("Word: " + word);
                 for (Map.Entry<String, List<Integer>> entry : fileLinesMap.entrySet()) {
                     String file = entry.getKey();
