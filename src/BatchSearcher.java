@@ -13,6 +13,13 @@ public class BatchSearcher implements Runnable {
 
     @Override
     public void run() {
-        Main.files.forEach(file -> executorService.submit(new FileSearcher(batch, file)));
+
+        System.out.println("batch = " + batch);
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        Main.textFilePaths.forEach(file -> executorService.submit(new FileSearcher(batch, file)));
     }
 }

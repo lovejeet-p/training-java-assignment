@@ -25,14 +25,23 @@ class Consumer implements Runnable {
 
     @Override
     public void run() {
+        try {
+            Thread.sleep(20000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         while (true) {
             ArrayList<String> wordBatch = new ArrayList<>();
-            for(int i = 0; i < min(BATCH_SIZE, Main.taskQueue.size()); i++) {
+            int taskSize=Main.taskQueue.size();
+            for(int i = 0; i < min(BATCH_SIZE, taskSize); i++) {
                 String word = Main.taskQueue.poll();
                 wordBatch.add(word);
                 System.out.println("Consumed: " + word);
             }
 
+            if(wordBatch.size() == 0) {
+                continue;
+            }
             BatchSearcher batchSearcher = new BatchSearcher(wordBatch, fileExecutorService);
             batchExecutorService.execute(batchSearcher);
         }
